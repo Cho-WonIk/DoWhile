@@ -71,7 +71,7 @@ def main():
         ref_docu = ref.document("grade")
         doc = ref_docu.get()
 
-        doc_ref = db.collection('user').document('test')
+        doc_ref = db.collection('test').document('testDocument')
         doc_ref.set({
             'api': openai_api_key,
             'grade': 1,
