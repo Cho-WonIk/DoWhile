@@ -135,6 +135,7 @@ def page_one():
 
 
             query = str(st.session_state.student_info['major']) + str(st.session_state.student_info['grade']) + "학년 " + str(st.session_state.student_info['student_career']) + "꿈인 학생이 들을만한 강의추천 목록 출력해줘"
+            result = chain({"question": query})
             response = result['answer']
             # Firestore에 데이터 작성
             doc_ref = collection_ref.document(str(id))
