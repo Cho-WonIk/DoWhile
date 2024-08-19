@@ -50,18 +50,13 @@ def main():
             st.info("Please add your OpenAI API key to continue.")
             st.stop()
 
-        current_directory = os.path.dirname(os.path.abspath(__file__))
-        file_path = os.path.join(current_directory, "auth.json")
-
-        print("Current working directory:", os.getcwd())
-        print("Current file list:", os.listdir(os.getcwd()))
-
-        directory = os.getcwd()
-
-        cred = credentials.Certificate(directory + "/auth.json")
+        cred = credentials.Certificate("auth.json")
 
         # Firebase 앱 초기화
-        firebase_admin.initialize_app(cred)
+        if not firebase_admin._apps:
+            firebase_admin.initialize_app(cred)
+        else:
+            print("Firebase app is already initialized.")
 
         # Firestore DB Client 가져오기
         db = firestore.client()
