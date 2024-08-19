@@ -43,9 +43,12 @@ def main():
     if "processComplete" not in st.session_state:
         st.session_state.processComplete = None
 
+    # 사이드바 위젯 설정
+    with st.sidebar:
+        uploaded_files = ["2024학년도 2학기 컴공강의.pdf"]
+        openai_api_key = st.secrets["openai_api_key"]
+        process = st.button("Process")
         
-    openai_api_key = st.secrets["openai_api_key"]
-    process = True
     if process:
         # OpenAI API 키 확인
         if not openai_api_key:
