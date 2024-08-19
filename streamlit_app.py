@@ -197,7 +197,7 @@ def get_text(docs):
                 logger.error(f"Unexpected error reading JSON file {file_name}: {e}")
 
 
-        print(documents)
+        print("문서 출력", documents)
         doc_list.extend(documents)
     return doc_list
 
