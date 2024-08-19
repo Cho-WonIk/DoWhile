@@ -22,17 +22,19 @@ from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.memory import ConversationBufferMemory
 from langchain.vectorstores import FAISS
 
-# from streamlit_chat import message
 from langchain.callbacks import get_openai_callback
 from langchain.memory import StreamlitChatMessageHistory
 
 def main():
+    # Streamlit 페이지 설정
     st.set_page_config(
     page_title="DirChat",
     page_icon=":books:")
 
+    # 페이지 제목 설정
     st.title("_Private Data :red[QA Chat]_ :books:")
 
+    # 세션 상태 초기화
     if "conversation" not in st.session_state:
         st.session_state.conversation = None
 
@@ -42,27 +44,29 @@ def main():
     if "processComplete" not in st.session_state:
         st.session_state.processComplete = None
 
+    # 사이드바 위젯 설정
     with st.sidebar:
-        uploaded_files =  st.file_uploader("Upload your file", type=['pdf', 'docx', 'pptx', 'json'],accept_multiple_files=True)
+        uploaded_files = st.file_uploader("Upload your file", type=['pdf', 'docx', 'pptx', 'json'], accept_multiple_files=True)
         openai_api_key = st.text_input("OpenAI API Key", key="chatbot_api_key", type="password")
         process = st.button("Process")
+        
     if process:
+        # OpenAI API 키 확인
         if not openai_api_key:
             st.info("Please add your OpenAI API key to continue.")
             st.stop()
 
+        # Firebase 인증서 설정 및 초기화
         cred = credentials.Certificate("auth.json")
-
-        # Firebase 앱 초기화
         if not firebase_admin._apps:
             firebase_admin.initialize_app(cred)
         else:
             print("Firebase app is already initialized.")
 
-        # Firestore DB Client 가져오기
+        # Firestore 데이터베이스 클라이언트 가져오기
         db = firestore.client()
 
-        # document에 데이터 작성
+        # Firestore에 데이터 작성
         doc_ref = db.collection('test').document('testDocument')
         doc_ref.set({
             'api': openai_api_key,
@@ -70,7 +74,7 @@ def main():
             'major': "AI 빅데이터 학과"
         })
 
-        # 데이터 읽기
+        # Firestore에서 데이터 읽기
         doc_ref1 = db.collection('user').document('20211447')
         doc1 = doc_ref1.get()
         if doc1.exists:
@@ -78,15 +82,15 @@ def main():
         else:
             print("No such document!")
 
-
+        # 업로드된 파일 처리 및 문서 리스트 생성
         files_text = get_text(uploaded_files)
         text_chunks = get_text_chunks(files_text)
         vetorestore = get_vectorstore(text_chunks)
-     
-        st.session_state.conversation = get_conversation_chain(vetorestore,openai_api_key) 
+
+        # 대화 체인 설정
+        st.session_state.conversation = get_conversation_chain(vetorestore, openai_api_key) 
 
         st.session_state.processComplete = True
-
     if 'messages' not in st.session_state:
         st.session_state['messages'] = [{"role": "assistant", 
                                         "content": "안녕하세요! 주어진 문서에 대해 궁금하신 것이 있으면 언제든 물어봐주세요!"}]
@@ -138,15 +142,14 @@ def main():
                         st.markdown(doc.metadata.get('source', 'No source available'), help=doc.page_content)
                     
 
-
-# Add assistant message to chat history
+        # 어시스턴트 답변을 채팅 메시지에 추가
         st.session_state.messages.append({"role": "assistant", "content": response})
 
 def tiktoken_len(text):
+    # 텍스트의 토큰 수를 계산하는 함수
     tokenizer = tiktoken.get_encoding("cl100k_base")
     tokens = tokenizer.encode(text)
     return len(tokens)
-
 def get_text(docs):
 
     doc_list = []
@@ -195,6 +198,7 @@ def get_text(docs):
 
 
 def get_text_chunks(text):
+    # 텍스트를 청크로 나누는 함수
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=900,
         chunk_overlap=100,
@@ -203,31 +207,30 @@ def get_text_chunks(text):
     chunks = text_splitter.split_documents(text)
     return chunks
 
-
 def get_vectorstore(text_chunks):
+    # 문서 청크를 벡터스토어로 변환하는 함수
     embeddings = HuggingFaceEmbeddings(
-                                        model_name="jhgan/ko-sroberta-multitask",
-                                        model_kwargs={'device': 'cpu'},
-                                        encode_kwargs={'normalize_embeddings': True}
-                                        )  
+        model_name="jhgan/ko-sroberta-multitask",
+        model_kwargs={'device': 'cpu'},
+        encode_kwargs={'normalize_embeddings': True}
+    )  
     vectordb = FAISS.from_documents(text_chunks, embeddings)
     return vectordb
 
-def get_conversation_chain(vetorestore,openai_api_key):
-    llm = ChatOpenAI(openai_api_key=openai_api_key, model_name = 'gpt-3.5-turbo',temperature=0)
+def get_conversation_chain(vetorestore, openai_api_key):
+    # 대화 체인을 설정하는 함수
+    llm = ChatOpenAI(openai_api_key=openai_api_key, model_name='gpt-3.5-turbo', temperature=0)
     conversation_chain = ConversationalRetrievalChain.from_llm(
-            llm=llm, 
-            chain_type="stuff", 
-            retriever=vetorestore.as_retriever(search_type = 'mmr', vervose = True), 
-            memory=ConversationBufferMemory(memory_key='chat_history', return_messages=True, output_key='answer'),
-            get_chat_history=lambda h: h,
-            return_source_documents=True,
-            verbose = True
-        )
+        llm=llm, 
+        chain_type="stuff", 
+        retriever=vetorestore.as_retriever(search_type='mmr', vervose=True), 
+        memory=ConversationBufferMemory(memory_key='chat_history', return_messages=True, output_key='answer'),
+        get_chat_history=lambda h: h,
+        return_source_documents=True,
+        verbose=True
+    )
 
     return conversation_chain
-
-
 
 if __name__ == '__main__':
     main()
