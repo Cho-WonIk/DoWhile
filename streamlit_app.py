@@ -72,6 +72,30 @@ def page_one():
             st.session_state.student_info['major_credits'] = major_credits
 
         if st.button("저장"):
+            uploaded_files = [
+            "2024학년도 2학기 컴공강의.pdf", 
+            "게임프로그래밍.pdf",
+            "논리회로및실습.pdf",
+            "데이터베이스론.pdf",
+            "리눅스시스템.pdf",
+            "분산.객체시스템설계.pdf",
+            "운영체제론.pdf",
+            "웹프로그래밍.pdf",
+            "이산구조론.pdf",
+            "자바프로그래밍.pdf",
+            "정보컴퓨터교과교육론.pdf",
+            "정보컴퓨터교과교재연구및지도법.pdf",
+            "지능정보시스템설계.pdf",
+            "캡스톤디자인(소프트웨어공학).pdf",
+            "컴퓨터알고리즘.pdf",
+            "컴퓨터프로그래밍기초.pdf",
+            "프론트엔드웹디자인.pdf"]
+            openai_api_key = st.secrets["openai_api_key"]
+            # OpenAI API 키 확인
+            if not openai_api_key:
+                st.info("Please add your OpenAI API key to continue.")
+                st.stop()
+
             # 업로드된 파일 처리 및 문서 리스트 생성
             files_text = get_text(uploaded_files)
             text_chunks = get_text_chunks(files_text)
@@ -79,8 +103,39 @@ def page_one():
 
             # 대화 체인 설정
             st.session_state.conversation = get_conversation_chain(vetorestore, openai_api_key) 
+
             st.session_state.processComplete = True
 
+
+ 
+            # 컬렉션의 모든 문서를 가져옴
+            collection_ref = db.collection('langchain')
+            docs = collection_ref.stream()
+
+            # 숫자로 된 필드 이름을 수집하기 위한 리스트
+            documents = []
+            field_numbers = 0
+
+            for doc in docs:
+                doc_data = doc.to_dict()
+                documents.append(doc_data)
+                field_numbers = max(doc['id'] for doc in documents)
+
+
+            # 가장 높은 숫자를 찾아 다음 필드 이름 생성
+            if field_numbers != 0:
+                id = field_numbers + 1
+            else:
+                id = 1  # 숫자 필드가 없는 경우 1로 시작
+
+
+            # Firestore에 데이터 작성
+            doc_ref = collection_ref.document(str(id))
+            doc_ref.set({
+                'id': id,
+                'answer': query,
+                'response': response
+            })
 
             st.session_state.page = "AI 컨설팅"
 
@@ -134,26 +189,9 @@ def main():
 
     # 사이드바 위젯 설정
     with st.sidebar:
-        uploaded_files = [
-            "2024학년도 2학기 컴공강의.pdf", 
-            "게임프로그래밍.pdf",
-            "논리회로및실습.pdf",
-            "데이터베이스론.pdf",
-            "리눅스시스템.pdf",
-            "분산.객체시스템설계.pdf",
-            "운영체제론.pdf",
-            "웹프로그래밍.pdf",
-            "이산구조론.pdf",
-            "자바프로그래밍.pdf",
-            "정보컴퓨터교과교육론.pdf",
-            "정보컴퓨터교과교재연구및지도법.pdf",
-            "지능정보시스템설계.pdf",
-            "캡스톤디자인(소프트웨어공학).pdf",
-            "컴퓨터알고리즘.pdf",
-            "컴퓨터프로그래밍기초.pdf",
-            "프론트엔드웹디자인.pdf"]
-        openai_api_key = st.secrets["openai_api_key"]
-        process = st.button("Process")
+        
+        
+        #process = st.button("Process")
 
         page = st.sidebar.radio("MENU", ["정보 입력", "AI 컨설팅"], index=["정보 입력", "AI 컨설팅"].index(st.session_state.page))
 
@@ -175,52 +213,7 @@ def main():
     # Firestore 데이터베이스 클라이언트 가져오기
     db = firestore.client()
         
-    if process:
-        # OpenAI API 키 확인
-        if not openai_api_key:
-            st.info("Please add your OpenAI API key to continue.")
-            st.stop()
-
-        # 업로드된 파일 처리 및 문서 리스트 생성
-        files_text = get_text(uploaded_files)
-        text_chunks = get_text_chunks(files_text)
-        vetorestore = get_vectorstore(text_chunks)
-
-        # 대화 체인 설정
-        st.session_state.conversation = get_conversation_chain(vetorestore, openai_api_key) 
-
-        st.session_state.processComplete = True
-
-
- 
-        # 컬렉션의 모든 문서를 가져옴
-        collection_ref = db.collection('langchain')
-        docs = collection_ref.stream()
-
-        # 숫자로 된 필드 이름을 수집하기 위한 리스트
-        documents = []
-        field_numbers = 0
-
-        for doc in docs:
-            doc_data = doc.to_dict()
-            documents.append(doc_data)
-            field_numbers = max(doc['id'] for doc in documents)
-
-
-        # 가장 높은 숫자를 찾아 다음 필드 이름 생성
-        if field_numbers != 0:
-            id = field_numbers + 1
-        else:
-            id = 1  # 숫자 필드가 없는 경우 1로 시작
-
-
-        # Firestore에 데이터 작성
-        doc_ref = collection_ref.document(str(id))
-        doc_ref.set({
-            'id': id,
-            'answer': query,
-            'response': response
-        })
+    
 
 def tiktoken_len(text):
     # 텍스트의 토큰 수를 계산하는 함수
