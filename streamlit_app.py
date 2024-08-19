@@ -48,6 +48,9 @@ def main():
         uploaded_files = ["2024학년도 2학기 컴공강의.pdf"]
         openai_api_key = st.secrets["openai_api_key"]
         process = st.button("Process")
+
+    # Firestore 데이터베이스 클라이언트 가져오기
+    db = firestore.client()
         
     if process:
         # OpenAI API 키 확인
@@ -62,17 +65,6 @@ def main():
             firebase_admin.initialize_app(cred)
         else:
             print("Firebase app is already initialized.")
-
-        # Firestore 데이터베이스 클라이언트 가져오기
-        db = firestore.client()
-
-        # Firestore에서 데이터 읽기
-        doc_ref1 = db.collection('user').document('20211447')
-        doc1 = doc_ref1.get()
-        if doc1.exists:
-            print("Document data:", doc1.to_dict())
-        else:
-            print("No such document!")
 
         # 업로드된 파일 처리 및 문서 리스트 생성
         files_text = get_text(uploaded_files)
