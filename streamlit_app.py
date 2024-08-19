@@ -195,6 +195,9 @@ def page_two():
             st.text_area("AI의견", response2, height=200)
 
 
+def page_three():
+    st.write("세번째 페이지")
+
 def main():
     if 'page' not in st.session_state:
         st.session_state.page = "정보 입력"
@@ -207,12 +210,14 @@ def main():
         
         #process = st.button("Process")
 
-        page = st.sidebar.radio("MENU", ["정보 입력", "AI 컨설팅"], index=["정보 입력", "AI 컨설팅"].index(st.session_state.page))
+        page = st.sidebar.radio("MENU", ["정보 입력", "AI 컨설팅", "Q&A"], index=["정보 입력", "AI 컨설팅", "Q&A"].index(st.session_state.page))
 
     if page == "정보 입력":
         page_one()
     elif page == "AI 컨설팅":
         page_two()
+    elif page == "Q&A":
+        page_three()
 
 
     # Firebase 인증서 설정 및 초기화
