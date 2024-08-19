@@ -69,6 +69,12 @@ def main():
     # Firebase 인증서 설정 및 초기화
     cred = credentials.Certificate("auth.json")
 
+    if not firebase_admin._apps:
+        firebase_admin.initialize_app(cred)
+    else:
+        print("Firebase app is already initialized.")
+
+
     # Firestore 데이터베이스 클라이언트 가져오기
     db = firestore.client()
         
@@ -77,11 +83,6 @@ def main():
         if not openai_api_key:
             st.info("Please add your OpenAI API key to continue.")
             st.stop()
-
-        if not firebase_admin._apps:
-            firebase_admin.initialize_app(cred)
-        else:
-            print("Firebase app is already initialized.")
 
         # 업로드된 파일 처리 및 문서 리스트 생성
         files_text = get_text(uploaded_files)
