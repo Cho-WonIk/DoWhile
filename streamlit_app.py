@@ -72,15 +72,24 @@ def page_one():
             st.session_state.student_info['major_credits'] = major_credits
 
         if st.button("저장"):
+            # 업로드된 파일 처리 및 문서 리스트 생성
+            files_text = get_text(uploaded_files)
+            text_chunks = get_text_chunks(files_text)
+            vetorestore = get_vectorstore(text_chunks)
+
+            # 대화 체인 설정
+            st.session_state.conversation = get_conversation_chain(vetorestore, openai_api_key) 
+            st.session_state.processComplete = True
+
+
             st.session_state.page = "AI 컨설팅"
 
 
 # 페이지 2: AI 컨설팅
 def page_two():
-    #chain = st.session_state.conversation
+    chain = st.session_state.conversation
     st.subheader("AI 컨설팅")
 
-    chain = get_conversation_chain(vetorestore, openai_api_key)
     query = "컴퓨터 공학과 2학년 웹 개발자가 꿈이 학생이 들을만한 강의 추천해줘"        ##사용자 정보를 바탕으로 쿼리문 입력
     result = chain({"question": query})
     response = result['answer']
