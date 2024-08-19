@@ -194,6 +194,9 @@ def page_two():
         with col2_2:
             st.text_area("AI의견", response2, height=200)
 
+    if st.button("질문"):
+        st.session_state.page = "Q&A"
+
 
 def page_three():
     st.write("세번째 페이지")
