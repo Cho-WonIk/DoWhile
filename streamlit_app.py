@@ -168,10 +168,7 @@ def get_text(docs):
         elif file_name.endswith('.json'):
             with open(file_name, 'r', encoding='utf-8') as json_file:
                 json_data = json.load(json_file)
-                # Assuming json_data is a dictionary or list of dictionaries
-                if isinstance(json_data, dict):
-                    json_data = [json_data]  # Convert single dict to list
-                # Create Document objects from each dictionary
+                # Assuming json_data is a list of dictionaries and you want to treat each item as a document
                 documents = [Document(page_content=json.dumps(item)) for item in json_data]
                 logger.info(f"Loaded JSON data from {file_name}")
 
