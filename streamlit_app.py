@@ -49,7 +49,7 @@ def main():
             st.info("Please add your OpenAI API key to continue.")
             st.stop()
 
-        cred = credentials.Certificate("./auth.json")
+        cred = credentials.Certificate("auth.json")
 
         # Firebase 앱 초기화
         firebase_admin.initialize_app(cred)
