@@ -181,49 +181,6 @@ def main():
         st.session_state.processComplete = True
 
 
-    # 채팅 메시지 상태 초기화
-    if 'messages' not in st.session_state:
-        st.session_state['messages'] = [{"role": "assistant", "content": "안녕하세요! 주어진 문서에 대해 궁금하신 것이 있으면 언제든 물어봐주세요!"}]
-
-    # 채팅 메시지 표시
-    for message in st.session_state.messages:
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
-
-    # 채팅 메시지 기록 초기화
-    history = StreamlitChatMessageHistory(key="chat_messages")
-
-    # Chat logic
-    # 사용자 입력 받아 query 변수에 저장
-    if query := st.chat_input("질문을 입력해주세요."):
-
-        # 사용자가 입력한 질문을 st.session_state.messages 리스트에 추가
-        st.session_state.messages.append({"role": "user", "content": query})
-
-        # 사용자 메시지 화면에 표시
-        with st.chat_message("user"):
-            st.markdown(query) # 사용자 질문 넣기
-
-        # 답변 메시지 화면에 표시
-        with st.chat_message("assistant"):
-            # 이전에 설정한 대화 체인을 가져옴
-            chain = st.session_state.conversation
-
-            with st.spinner("Thinking..."):
-                # 대화 체인에 사용자의 질문을 전달
-                result = chain({"question": query})
-
-                # OpenAI API 호출에 대한 콜백을 설정
-                with get_openai_callback() as cb:
-                    # 대화 체인에서 반환된 대화 기록을 세션 상태에 저장
-                    st.session_state.chat_history = result['chat_history']
-
-                # 답변 가져옴
-                response = result['answer']
-                # 답변에 사용된 문서들을 가져옴
-                #source_documents = result['source_documents']
-
-
  
         # 컬렉션의 모든 문서를 가져옴
         collection_ref = db.collection('langchain')
