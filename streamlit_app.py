@@ -134,8 +134,7 @@ def page_one():
                 id = 1  # 숫자 필드가 없는 경우 1로 시작
 
 
-            query = st.session_state.student_info['major'] + st.session_state.student_info['grade'] + "학년 " + st.session_state.student_info['student_career'] + "꿈인 학생이 들을만한 강의목록만 출력해줘"
-            result = chain({"question": query})
+            query = str(st.session_state.student_info['major']) + str(st.session_state.student_info['grade']) + "학년 " + str(st.session_state.student_info['student_career']) + "꿈인 학생이 들을만한 강의추천 목록 출력해줘"
             response = result['answer']
             # Firestore에 데이터 작성
             doc_ref = collection_ref.document(str(id))
@@ -146,7 +145,7 @@ def page_one():
             })
             st.session_state.conversation2 = response
 
-            query2 = st.session_state.student_info['major'] + st.session_state.student_info['grade'] + "학년 " + st.session_state.student_info['student_career'] + "꿈인 학생이 들을만한 강의추천이유 출력해줘"
+            query2 = str(st.session_state.student_info['major']) + str(st.session_state.student_info['grade']) + "학년 " + str(st.session_state.student_info['student_career']) + "꿈인 학생이 들을만한 강의추천이유 출력해줘"
             result2 = chain({"question": query2})
             response2 = result2['answer']
             st.session_state.conversation3 = response2
