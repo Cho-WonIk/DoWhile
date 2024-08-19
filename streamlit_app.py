@@ -154,24 +154,39 @@ def tiktoken_len(text):
     tokens = tokenizer.encode(text)
     return len(tokens)
 
-def get_text(docs):
-
+def get_text(file_names):
     doc_list = []
-    
-    for doc in docs:
-        file_name = doc.name  # doc 객체의 이름을 파일 이름으로 사용
-        with open(file_name, "wb") as file:  # 파일을 doc.name으로 저장
-            file.write(doc.getvalue())
-            logger.info(f"Uploaded {file_name}")
-        if '.pdf' in doc.name:
-            loader = PyPDFLoader(file_name)
-            documents = loader.load_and_split()
-        elif '.docx' in doc.name:
-            loader = Docx2txtLoader(file_name)
-            documents = loader.load_and_split()
-        elif '.pptx' in doc.name:
-            loader = UnstructuredPowerPointLoader(file_name)
-            documents = loader.load_and_split()
+
+    for file_name in file_names:
+        # 파일을 로컬에 저장 (임시 저장)
+        if file_name.endswith('.pdf') or file_name.endswith('.docx') or file_name.endswith('.pptx'):
+            try:
+                # Assuming the file name is a path or URL that needs to be read
+                # This example assumes files are accessible and not in-memory
+                with open(file_name, "rb") as file:
+                    # Read the file content if needed
+                    file_content = file.read()
+                    
+                # Process the file based on its extension
+                if file_name.endswith('.pdf'):
+                    loader = PyPDFLoader(file_name)
+                    documents = loader.load_and_split()
+                elif file_name.endswith('.docx'):
+                    loader = Docx2txtLoader(file_name)
+                    documents = loader.load_and_split()
+                elif file_name.endswith('.pptx'):
+                    loader = UnstructuredPowerPointLoader(file_name)
+                    documents = loader.load_and_split()
+                else:
+                    logger.warning(f"Unsupported file type: {file_name}")
+                    continue
+
+                doc_list.extend(documents)
+                logger.info(f"Processed file: {file_name}")
+
+            except Exception as e:
+                logger.error(f"Error processing file {file_name}: {e}")
+
         elif file_name.endswith('.json'):
             try:
                 with open(file_name, 'r', encoding='utf-8') as json_file:
@@ -188,6 +203,7 @@ def get_text(docs):
                         logger.error(f"Unsupported JSON format in file: {file_name}")
                         continue  # 다음 파일로 이동
 
+                    doc_list.extend(documents)
                     logger.info(f"Loaded JSON data from {file_name}")
 
             except json.JSONDecodeError as e:
@@ -195,9 +211,6 @@ def get_text(docs):
             except Exception as e:
                 logger.error(f"Unexpected error reading JSON file {file_name}: {e}")
 
-
-        print("문서 출력", documents)
-        doc_list.extend(documents)
     return doc_list
 
 
