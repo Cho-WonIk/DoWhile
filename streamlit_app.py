@@ -7,6 +7,7 @@ import json
 import firebase_admin 
 from firebase_admin import credentials
 from firebase_admin import firestore
+from langchain.schema import Document
 
 from langchain.chains import ConversationalRetrievalChain
 from langchain.chat_models import ChatOpenAI
@@ -147,6 +148,12 @@ def get_text(docs):
         elif '.pptx' in doc.name:
             loader = UnstructuredPowerPointLoader(file_name)
             documents = loader.load_and_split()
+        elif file_name.endswith('.json'):
+            with open(file_name, 'r', encoding='utf-8') as json_file:
+                json_data = json.load(json_file)
+                # Assuming json_data is a list of dictionaries and you want to treat each item as a document
+                documents = [Document(page_content=json.dumps(item)) for item in json_data]
+                logger.info(f"Loaded JSON data from {file_name}")
 
         doc_list.extend(documents)
     return doc_list
