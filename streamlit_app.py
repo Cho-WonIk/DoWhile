@@ -24,6 +24,8 @@ from langchain.schema import Document
 from langchain.callbacks import get_openai_callback
 from langchain.memory import StreamlitChatMessageHistory
 
+
+
 # 학생 정보 초기화
 if 'student_info' not in st.session_state:
     st.session_state.student_info = {
@@ -141,7 +143,7 @@ def page_one():
                 'answer': query,
                 'response': response
             })
-
+            st.session_state.conversation2 = response
             st.session_state.page = "AI 컨설팅"
 
 
@@ -150,8 +152,7 @@ def page_two():
 
     st.subheader("AI 컨설팅")
 
-    
-
+    response = st.session_state.conversation2
 
     student_id = int(st.session_state.student_info['student_id'])
     if student_id >= 20160000:
@@ -212,9 +213,6 @@ def main():
         firebase_admin.initialize_app(cred)
     else:
         print("Firebase app is already initialized.")
-
-
-    
         
     
 
