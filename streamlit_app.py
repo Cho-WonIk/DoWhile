@@ -72,6 +72,7 @@ def page_one():
             st.session_state.student_info['major_credits'] = major_credits
 
         if st.button("저장"):
+            
             # Firestore 데이터베이스 클라이언트 가져오기
             db = firestore.client()
             uploaded_files = [
@@ -108,7 +109,7 @@ def page_one():
 
             st.session_state.processComplete = True
 
-
+            chain = st.session_state.conversation
  
             # 컬렉션의 모든 문서를 가져옴
             collection_ref = db.collection('langchain')
@@ -146,7 +147,7 @@ def page_one():
 
 # 페이지 2: AI 컨설팅
 def page_two():
-    chain = st.session_state.conversation
+
     st.subheader("AI 컨설팅")
 
     
