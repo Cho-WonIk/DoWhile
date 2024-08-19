@@ -191,7 +191,7 @@ def page_two():
             st.text_area("추천 강좌", response, height=200)
         
         with col2_2:
-            st.text_area("AI의견", "프롬프트 값 출력", response2,height=200)
+            st.text_area("AI의견", response2, height=200)
 
 
 def main():
