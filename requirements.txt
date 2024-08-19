@@ -13,4 +13,4 @@ pypdf
 loguru
 docx2txt
 pyrebase
-json
+firebase_admin
