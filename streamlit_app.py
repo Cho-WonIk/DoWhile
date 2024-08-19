@@ -133,7 +133,8 @@ def page_one():
             else:
                 id = 1  # 숫자 필드가 없는 경우 1로 시작
 
-            query = "컴퓨터 공학과 2학년 웹 개발자가 꿈이 학생이 들을만한 강의목록만 출력해줘"        ##사용자 정보를 바탕으로 쿼리문 입력
+
+            query = st.session_state.student_info['major'] + st.session_state.student_info['grade'] + "학년 " + st.session_state.student_info['student_career'] + "꿈인 학생이 들을만한 강의목록만 출력해줘"
             result = chain({"question": query})
             response = result['answer']
             # Firestore에 데이터 작성
@@ -145,7 +146,7 @@ def page_one():
             })
             st.session_state.conversation2 = response
 
-            query2 = "컴퓨터 공학과 2학년 웹 개발자가 꿈이 학생이 들을만한 강의 추천 이유를 알려줘"        ##사용자 정보를 바탕으로 쿼리문 입력
+            query2 = st.session_state.student_info['major'] + st.session_state.student_info['grade'] + "학년 " + st.session_state.student_info['student_career'] + "꿈인 학생이 들을만한 강의추천이유 출력해줘"
             result2 = chain({"question": query2})
             response2 = result2['answer']
             st.session_state.conversation3 = response2
