@@ -53,9 +53,9 @@ def main():
         current_directory = os.path.dirname(os.path.abspath(__file__))
         file_path = os.path.join(current_directory, "auth.json")
 
-        print("Current working directory:", os.getcwd())
+        # print("Current working directory:", os.getcwd())
 
-        cred = credentials.Certificate("DoWhile/auth.json")
+        cred = credentials.Certificate("/mount/src/dowhile/auth.json")
 
         # Firebase 앱 초기화
         firebase_admin.initialize_app(cred)
