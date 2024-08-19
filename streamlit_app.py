@@ -233,8 +233,8 @@ def get_conversation_chain(vetorestore, openai_api_key):
     llm = ChatOpenAI(
         openai_api_key=openai_api_key, 
         model_name='gpt-4o', 
-        temperature=0,
-        prompt=system_prompt
+        temperature=0
+        # prompt=system_prompt
         )
     
     conversation_chain = ConversationalRetrievalChain.from_llm(
