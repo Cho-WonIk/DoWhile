@@ -12,3 +12,5 @@ openai
 pypdf
 loguru
 docx2txt
+pyrebase
+json
