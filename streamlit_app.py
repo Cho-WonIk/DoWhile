@@ -154,22 +154,26 @@ def tiktoken_len(text):
     tokens = tokenizer.encode(text)
     return len(tokens)
 
-def get_text(docs):
-
+def get_text(uploaded_files):
     doc_list = []
     
-    for doc in docs:
-        file_name = doc  # doc 객체의 이름을 파일 이름으로 사용
-        with open(file_name, "wb") as file:  # 파일을 doc.name으로 저장
-            file.write(doc.getvalue())
+    for uploaded_file in uploaded_files:
+        # 파일 이름을 가져오기
+        file_name = uploaded_file.name
+        
+        # 파일을 저장하기
+        with open(file_name, "wb") as file:
+            file.write(uploaded_file.getvalue())
             logger.info(f"Uploaded {file_name}")
-        if '.pdf' in doc.name:
+        
+        # 파일 확장자에 따라 적절한 로더 사용
+        if file_name.endswith('.pdf'):
             loader = PyPDFLoader(file_name)
             documents = loader.load_and_split()
-        elif '.docx' in doc.name:
+        elif file_name.endswith('.docx'):
             loader = Docx2txtLoader(file_name)
             documents = loader.load_and_split()
-        elif '.pptx' in doc.name:
+        elif file_name.endswith('.pptx'):
             loader = UnstructuredPowerPointLoader(file_name)
             documents = loader.load_and_split()
         elif file_name.endswith('.json'):
@@ -195,9 +199,9 @@ def get_text(docs):
             except Exception as e:
                 logger.error(f"Unexpected error reading JSON file {file_name}: {e}")
 
-
         print("문서 출력", documents)
         doc_list.extend(documents)
+    
     return doc_list
 
 
