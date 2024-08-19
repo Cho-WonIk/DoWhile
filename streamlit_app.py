@@ -1,6 +1,7 @@
 import streamlit as st
 import tiktoken
 from loguru import logger
+import os
 import json
 
 import firebase_admin 
@@ -49,7 +50,10 @@ def main():
             st.info("Please add your OpenAI API key to continue.")
             st.stop()
 
-        cred = credentials.Certificate("auth.json")
+        current_directory = os.path.dirname(os.path.abspath(__file__))
+        file_path = os.path.join(current_directory, "auth.json")
+
+        cred = credentials.Certificate(file_path)
 
         # Firebase 앱 초기화
         firebase_admin.initialize_app(cred)
