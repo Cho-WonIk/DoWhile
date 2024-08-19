@@ -77,9 +77,10 @@ def page_one():
 
 # 페이지 2: AI 컨설팅
 def page_two():
-    chain = st.session_state.conversation
+    #chain = st.session_state.conversation
     st.subheader("AI 컨설팅")
 
+    chain = get_conversation_chain(vetorestore, openai_api_key)
     query = "컴퓨터 공학과 2학년 웹 개발자가 꿈이 학생이 들을만한 강의 추천해줘"        ##사용자 정보를 바탕으로 쿼리문 입력
     result = chain({"question": query})
     response = result['answer']
