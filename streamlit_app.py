@@ -296,7 +296,7 @@ def get_conversation_chain(vetorestore, openai_api_key, grad_Info):
     system_prompt = (
         "당신은 컴퓨터 공학 분야에 대한 깊은 지식을 갖춘 유능한 어시스턴트입니다. "
         "사용자의 질문에 대해 유용하고 도움이되는 정확하며 유용한 답변을 제공해야 합니다. "
-        "친절하고 전문적인 톤을 유지하면서 응답하세요."
+        "아래 정보는 학생이 이미 수강한 강좌들입니다."
     ).format(pre_context=grad_Info)
         
     llm = ChatOpenAI(
