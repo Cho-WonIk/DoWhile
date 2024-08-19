@@ -72,6 +72,8 @@ def page_one():
             st.session_state.student_info['major_credits'] = major_credits
 
         if st.button("저장"):
+            # Firestore 데이터베이스 클라이언트 가져오기
+            db = firestore.client()
             uploaded_files = [
             "2024학년도 2학기 컴공강의.pdf", 
             "게임프로그래밍.pdf",
@@ -210,8 +212,7 @@ def main():
         print("Firebase app is already initialized.")
 
 
-    # Firestore 데이터베이스 클라이언트 가져오기
-    db = firestore.client()
+    
         
     
 
