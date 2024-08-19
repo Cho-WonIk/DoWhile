@@ -66,6 +66,9 @@ def main():
         openai_api_key = st.secrets["openai_api_key"]
         process = st.button("Process")
 
+    # Firebase 인증서 설정 및 초기화
+    cred = credentials.Certificate("auth.json")
+
     # Firestore 데이터베이스 클라이언트 가져오기
     db = firestore.client()
         
@@ -74,9 +77,6 @@ def main():
         if not openai_api_key:
             st.info("Please add your OpenAI API key to continue.")
             st.stop()
-
-        # Firebase 인증서 설정 및 초기화
-        cred = credentials.Certificate("auth.json")
 
         if not firebase_admin._apps:
             firebase_admin.initialize_app(cred)
