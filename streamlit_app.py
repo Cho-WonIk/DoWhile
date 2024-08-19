@@ -45,7 +45,6 @@ def main():
 
     # 사이드바 위젯 설정
     with st.sidebar:
-        uploaded_files = st.file_uploader("Upload your file", type=['pdf', 'docx', 'pptx', 'json'], accept_multiple_files=True)
         openai_api_key = st.secrets["openai_api_key"]
         process = st.button("Process")
         
