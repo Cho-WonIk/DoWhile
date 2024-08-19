@@ -130,7 +130,9 @@ def page_one():
             else:
                 id = 1  # 숫자 필드가 없는 경우 1로 시작
 
-
+            query = "컴퓨터 공학과 2학년 웹 개발자가 꿈이 학생이 들을만한 강의 추천해줘"        ##사용자 정보를 바탕으로 쿼리문 입력
+            result = chain({"question": query})
+            response = result['answer']
             # Firestore에 데이터 작성
             doc_ref = collection_ref.document(str(id))
             doc_ref.set({
@@ -147,9 +149,8 @@ def page_two():
     chain = st.session_state.conversation
     st.subheader("AI 컨설팅")
 
-    query = "컴퓨터 공학과 2학년 웹 개발자가 꿈이 학생이 들을만한 강의 추천해줘"        ##사용자 정보를 바탕으로 쿼리문 입력
-    result = chain({"question": query})
-    response = result['answer']
+    
+
 
     student_id = int(st.session_state.student_info['student_id'])
     if student_id >= 20160000:
