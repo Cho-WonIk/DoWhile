@@ -66,20 +66,6 @@ def main():
         # Firestore DB Client 가져오기
         db = firestore.client()
 
-        # 데이터베이스 가져오기
-        ref = db.reference("/user")
-
-        # 데이터 읽기
-        data = ref.get()
-
-        # collection 전부 가져오기
-        ref = db.collection("20211447")
-        docs = ref.stream()
-
-        # document 선택 및 가져오기
-        ref_docu = ref.document("grade")
-        doc = ref_docu.get()
-
         # document에 데이터 작성
         doc_ref = db.collection('test').document('testDocument')
         doc_ref.set({
