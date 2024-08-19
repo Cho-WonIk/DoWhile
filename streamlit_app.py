@@ -160,13 +160,13 @@ def get_text(docs):
     for doc in docs:
         file_name = doc  # doc 객체의 이름을 파일 이름으로 사용
 
-        if '.pdf' in doc.name:
+        if '.pdf' in doc:
             loader = PyPDFLoader(file_name)
             documents = loader.load_and_split()
-        elif '.docx' in doc.name:
+        elif '.docx' in doc:
             loader = Docx2txtLoader(file_name)
             documents = loader.load_and_split()
-        elif '.pptx' in doc.name:
+        elif '.pptx' in doc:
             loader = UnstructuredPowerPointLoader(file_name)
             documents = loader.load_and_split()
         elif file_name.endswith('.json'):
