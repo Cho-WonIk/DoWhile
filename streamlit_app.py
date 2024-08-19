@@ -45,7 +45,24 @@ def main():
 
     # 사이드바 위젯 설정
     with st.sidebar:
-        uploaded_files = ["2024학년도 2학기 컴공강의.pdf"]
+        uploaded_files = [
+            "2024학년도 2학기 컴공강의.pdf", 
+            "게임프로그래밍.pdf",
+            "논리회로및실습.pdf",
+            "데이터베이스론.pdf",
+            "리눅스시스템.pdf",
+            "분산.객체시스템설계.pdf",
+            "운영체제론.pdf",
+            "웹프로그래밍.pdf",
+            "이산구조론.pdf",
+            "자바프로그래밍.pdf",
+            "정보컴퓨터교과교육론.pdf",
+            "정보컴퓨터교과교재연구및지도법.pdf",
+            "지능정보시스템설계.pdf",
+            "캡스톤디자인(소프트웨어공학).pdf",
+            "컴퓨터알고리즘.pdf",
+            "컴퓨터프로그래밍기초.pdf",
+            "프론트엔드웹디자인.pdf"]
         openai_api_key = st.secrets["openai_api_key"]
         process = st.button("Process")
 
