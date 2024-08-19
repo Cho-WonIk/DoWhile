@@ -220,10 +220,7 @@ def get_vectorstore(text_chunks):
 
 def get_conversation_chain(vetorestore, openai_api_key):
     pre_context = (
-        "다음은 회사의 최신 정책입니다. "
-        "1. 근무 시간은 오전 9시부터 오후 6시까지입니다. "
-        "2. 모든 직원은 매주 월요일에 주간 회의를 참석해야 합니다. "
-        "3. 휴가는 연간 20일 제공됩니다."
+        ""
     )
         
     system_prompt = (
