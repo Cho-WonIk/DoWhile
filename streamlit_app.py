@@ -71,6 +71,7 @@ def main():
         ref_docu = ref.document("grade")
         doc = ref_docu.get()
 
+        # document에 데이터 작성
         doc_ref = db.collection('test').document('testDocument')
         doc_ref.set({
             'api': openai_api_key,
