@@ -57,6 +57,7 @@ def main():
 
         # Firebase 인증서 설정 및 초기화
         cred = credentials.Certificate("auth.json")
+
         if not firebase_admin._apps:
             firebase_admin.initialize_app(cred)
         else:
@@ -64,14 +65,6 @@ def main():
 
         # Firestore 데이터베이스 클라이언트 가져오기
         db = firestore.client()
-
-        # Firestore에 데이터 작성
-        doc_ref = db.collection('test').document('testDocument')
-        doc_ref.set({
-            'api': openai_api_key,
-            'grade': 1,
-            'major': "AI 빅데이터 학과"
-        })
 
         # Firestore에서 데이터 읽기
         doc_ref1 = db.collection('user').document('20211447')
@@ -147,6 +140,35 @@ def main():
 
         # 어시스턴트 답변을 채팅 메시지에 추가
         st.session_state.messages.append({"role": "assistant", "content": response})
+
+        # 컬렉션의 모든 문서를 가져옴
+        collection_ref = db.collection('langchain')
+        docs = collection_ref.stream()
+
+        # 숫자로 된 필드 이름을 수집하기 위한 리스트
+        documents = []
+        field_numbers = 0
+
+        for doc in docs:
+            doc_data = doc.to_dict()
+            documents.append(doc_data)
+            field_numbers = max(doc['id'] for doc in documents)
+
+
+        # 가장 높은 숫자를 찾아 다음 필드 이름 생성
+        if field_numbers != 0:
+            id = field_numbers + 1
+        else:
+            id = 1  # 숫자 필드가 없는 경우 1로 시작
+
+
+        # Firestore에 데이터 작성
+        doc_ref = collection_ref.document(str(id))
+        doc_ref.set({
+            'id': id,
+            'answer': query,
+            'response': response
+        })
 
 def tiktoken_len(text):
     # 텍스트의 토큰 수를 계산하는 함수
