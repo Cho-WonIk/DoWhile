@@ -220,7 +220,19 @@ def get_vectorstore(text_chunks):
 
 def get_conversation_chain(vetorestore, openai_api_key):
     # 대화 체인을 설정하는 함수
-    llm = ChatOpenAI(openai_api_key=openai_api_key, model_name='gpt-4o', temperature=0)
+    system_prompt = (
+        "당신은 다양한 분야에 대한 광범위한 지식을 갖춘 유능한 어시스턴트입니다. "
+        "사용자의 질문에 대해 간결하고 정확하며 유용한 답변을 제공해야 합니다. "
+        "친절하고 전문적인 톤을 유지하면서 응답하세요."
+    )
+        
+    llm = ChatOpenAI(
+        openai_api_key=openai_api_key, 
+        model_name='gpt-4o', 
+        temperature=0,
+        prompt=system_prompt
+        )
+    
     conversation_chain = ConversationalRetrievalChain.from_llm(
         llm=llm, 
         chain_type="stuff", 
