@@ -69,6 +69,14 @@ def main():
             'major': "AI 빅데이터 학과"
         })
 
+        # 데이터 읽기
+        doc_ref1 = db.collection('user').document('20211447')
+        doc1 = doc_ref1.get()
+        if doc1.exists:
+            print("Document data:", doc1.to_dict())
+        else:
+            print("No such document!")
+
 
         files_text = get_text(uploaded_files)
         text_chunks = get_text_chunks(files_text)
