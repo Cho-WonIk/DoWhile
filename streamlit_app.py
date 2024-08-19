@@ -49,6 +49,7 @@ def main():
         openai_api_key = st.secrets["openai_api_key"]
         process = st.button("Process")
         
+    process = True
     if process:
         # OpenAI API 키 확인
         if not openai_api_key:
