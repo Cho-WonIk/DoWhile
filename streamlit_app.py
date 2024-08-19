@@ -91,7 +91,8 @@ def main():
         st.session_state.conversation = get_conversation_chain(vetorestore, openai_api_key) 
 
         st.session_state.processComplete = True
-        
+
+
     # 채팅 메시지 상태 초기화
     if 'messages' not in st.session_state:
         st.session_state['messages'] = [{"role": "assistant", "content": "안녕하세요! 주어진 문서에 대해 궁금하신 것이 있으면 언제든 물어봐주세요!"}]
@@ -153,6 +154,7 @@ def tiktoken_len(text):
     tokenizer = tiktoken.get_encoding("cl100k_base")
     tokens = tokenizer.encode(text)
     return len(tokens)
+
 def get_text(docs):
 
     doc_list = []
@@ -194,8 +196,8 @@ def get_text(docs):
             except Exception as e:
                 logger.error(f"Unexpected error reading JSON file {file_name}: {e}")
 
-        doc_list.extend(documents)
 
+        print(documents)
         doc_list.extend(documents)
     return doc_list
 
@@ -203,8 +205,8 @@ def get_text(docs):
 def get_text_chunks(text):
     # 텍스트를 청크로 나누는 함수
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=900,
-        chunk_overlap=100,
+        chunk_size=800,
+        chunk_overlap=50,
         length_function=tiktoken_len
     )
     chunks = text_splitter.split_documents(text)
@@ -213,7 +215,7 @@ def get_text_chunks(text):
 def get_vectorstore(text_chunks):
     # 문서 청크를 벡터스토어로 변환하는 함수
     embeddings = HuggingFaceEmbeddings(
-        model_name="jhgan/ko-sroberta-multitask",
+        model_name="intfloat/multilingual-e5-base",
         model_kwargs={'device': 'cpu'},
         encode_kwargs={'normalize_embeddings': True}
     )  
@@ -233,6 +235,7 @@ def get_conversation_chain(vetorestore, openai_api_key):
         verbose=True
     )
 
+    print(conversation_chain)
     return conversation_chain
 
 if __name__ == '__main__':
