@@ -43,11 +43,12 @@ def main():
     if "processComplete" not in st.session_state:
         st.session_state.processComplete = None
 
-
-    uploaded_files = ["2024학년도 2학기 컴공강의.pdf"]
-    openai_api_key = st.secrets["openai_api_key"]
+    # 사이드바 위젯 설정
+    with st.sidebar:
+        uploaded_files = ["2024학년도 2학기 컴공강의.pdf"]
+        openai_api_key = st.secrets["openai_api_key"]
+        process = st.button("Process")
         
-    process = True
     if process:
         # OpenAI API 키 확인
         if not openai_api_key:
@@ -169,29 +170,6 @@ def get_text(docs):
         elif '.pptx' in doc:
             loader = UnstructuredPowerPointLoader(file_name)
             documents = loader.load_and_split()
-        elif file_name.endswith('.json'):
-            try:
-                with open(file_name, 'r', encoding='utf-8') as json_file:
-                    json_data = json.load(json_file)
-                    # JSON 데이터가 리스트인지 확인
-                    if isinstance(json_data, list):
-                        # JSON 데이터가 리스트인 경우
-                        documents = [Document(page_content=json.dumps(item)) for item in json_data]
-                    elif isinstance(json_data, dict):
-                        # JSON 데이터가 딕셔너리인 경우
-                        documents = [Document(page_content=json.dumps(json_data))]
-                    else:
-                        # JSON 데이터가 리스트나 딕셔너리가 아닌 경우
-                        logger.error(f"Unsupported JSON format in file: {file_name}")
-                        continue  # 다음 파일로 이동
-
-                    logger.info(f"Loaded JSON data from {file_name}")
-
-            except json.JSONDecodeError as e:
-                logger.error(f"Error decoding JSON file {file_name}: {e}")
-            except Exception as e:
-                logger.error(f"Unexpected error reading JSON file {file_name}: {e}")
-
 
         print("문서 출력", documents)
         doc_list.extend(documents)
