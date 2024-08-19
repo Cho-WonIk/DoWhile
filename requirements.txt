@@ -12,5 +12,4 @@ openai
 pypdf
 loguru
 docx2txt
-pyrebase
 firebase_admin
