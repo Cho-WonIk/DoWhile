@@ -1,8 +1,11 @@
 import streamlit as st
 import tiktoken
 from loguru import logger
-import firebase_admin
 import json
+
+import firebase_admin 
+from firebase_admin import credentials
+from firebase_admin import firestore
 
 from langchain.chains import ConversationalRetrievalChain
 from langchain.chat_models import ChatOpenAI
@@ -45,6 +48,36 @@ def main():
         if not openai_api_key:
             st.info("Please add your OpenAI API key to continue.")
             st.stop()
+
+        cred = credentials.Certificate("./auth.json")
+
+        # Firebase 앱 초기화
+        firebase_admin.initialize_app(cred)
+
+        # Firestore DB Client 가져오기
+        db = firestore.client()
+
+        # 데이터베이스 가져오기
+        ref = db.reference("/user")
+
+        # 데이터 읽기
+        data = ref.get()
+
+        # collection 전부 가져오기
+        ref = db.collection("20211447")
+        docs = ref.stream()
+
+        # document 선택 및 가져오기
+        ref_docu = ref.document("grade")
+        doc = ref_docu.get()
+
+        doc_ref = db.collection('user').document('test')
+        doc_ref.set({
+            'api': openai_api_key,
+            'grade': 1,
+            'major': "AI 빅데이터 학과"
+        })
+
 
         files_text = get_text(uploaded_files)
         text_chunks = get_text_chunks(files_text)
