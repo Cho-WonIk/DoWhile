@@ -7,7 +7,6 @@ import json
 import firebase_admin 
 from firebase_admin import credentials
 from firebase_admin import firestore
-from langchain.schema import Document
 
 from langchain.chains import ConversationalRetrievalChain
 from langchain.chat_models import ChatOpenAI
@@ -21,7 +20,7 @@ from langchain.embeddings import HuggingFaceEmbeddings
 
 from langchain.memory import ConversationBufferMemory
 from langchain.vectorstores import FAISS
-
+from langchain.schema import Document
 from langchain.callbacks import get_openai_callback
 from langchain.memory import StreamlitChatMessageHistory
 
@@ -224,7 +223,7 @@ def get_vectorstore(text_chunks):
 
 def get_conversation_chain(vetorestore, openai_api_key):
     # 대화 체인을 설정하는 함수
-    llm = ChatOpenAI(openai_api_key=openai_api_key, model_name='gpt-3.5-turbo', temperature=0)
+    llm = ChatOpenAI(openai_api_key=openai_api_key, model_name='gpt-4o', temperature=0)
     conversation_chain = ConversationalRetrievalChain.from_llm(
         llm=llm, 
         chain_type="stuff", 
