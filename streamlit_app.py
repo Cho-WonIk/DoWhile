@@ -24,24 +24,102 @@ from langchain.schema import Document
 from langchain.callbacks import get_openai_callback
 from langchain.memory import StreamlitChatMessageHistory
 
+# 학생 정보 초기화
+if 'student_info' not in st.session_state:
+    st.session_state.student_info = {
+        'grade': 1,
+        'major': "컴퓨터공학과",
+        'student_id': "20001234",
+        'student_career': "미정",
+        'general_credits': 0,
+        'major_credits': 0
+    }
+
+# 페이지 1: 정보 입력
+def page_one():
+    st.subheader("학생 정보")
+    with st.container():
+        student_info_col, grade_col = st.columns(2)
+
+        with student_info_col:
+            st.session_state.student_info['student_id'] = st.text_input("학번", value=st.session_state.student_info['student_id'])
+            st.session_state.student_info['major'] = st.text_input("학과", value=st.session_state.student_info['major'])
+            st.session_state.student_info['grade'] = st.number_input("학년", value=st.session_state.student_info['grade'], format="%d")
+            st.session_state.student_info['student_career'] = st.selectbox("희망 직종 선택", ["미정", "프론트엔드", "백엔드", "임베디드", "보안", "인공지능"], index=["미정", "프론트엔드", "백엔드", "임베디드", "보안", "인공지능"].index(st.session_state.student_info['student_career']))
+
+        with grade_col:
+            grad_info = st.text_area("이수 정보 입력(입력방법: 과목명, 구분, 학점)", height=375)  # 이수한 과목 및 학점 입력
+
+            # 입력된 데이터를 줄별로 분리
+            lines = grad_info.split('\n')
+            general_credits, major_credits = 0, 0
+
+            # 각 줄을 처리
+            for line in lines:
+                if line.strip():  # 공백이 아닌 줄만 처리
+                    parts = line.split(',')  # 쉼표로 데이터 분리
+                    if len(parts) == 3:  # 정확히 세 부분으로 나뉘는지 확인
+                        category = parts[1].strip()  # 구분 (교양 혹은 전공)
+                        credits = int(parts[2].strip())  # 학점
+
+                        # 교양과 전공 학점 합산
+                        if category == "교양":
+                            general_credits += credits
+                        elif category == "전공":
+                            major_credits += credits
+
+            st.session_state.student_info['general_credits'] = general_credits
+            st.session_state.student_info['major_credits'] = major_credits
+
+        if st.button("저장"):
+            st.session_state.page = "AI 컨설팅"
+
+
+# 페이지 2: AI 컨설팅
+def page_two():
+    st.subheader("AI 컨설팅")
+
+    query = "컴퓨터 공학과 2학년 웹 개발자가 꿈이 학생이 들을만한 강의 추천해줘"        ##사용자 정보를 바탕으로 쿼리문 입력
+    result = chain({"question": query})
+    response = result['answer']
+
+    student_id = int(st.session_state.student_info['student_id'])
+    if student_id >= 20160000:
+        required_general_credits = "/46 미만"
+        required_major_credits = "/42 이상"
+    else:
+        required_general_credits = "/40 미만"
+        required_major_credits = "/46 이상"
+
+    
+    with st.container():
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.write("희망 직종 : ", st.session_state.student_info['student_career'])
+        
+        with col2:
+            st.write("교양 이수 최소 학점 : 12학점 이상")
+            st.write("교양 학점 : ", st.session_state.student_info['general_credits'], required_general_credits)
+            st.write("전공 학점 : ", st.session_state.student_info['major_credits'], required_major_credits)
+
+    st.write("---")
+
+    with st.container():
+        col2_1, col2_2 = st.columns(2)
+
+        with col2_1:
+            st.text_area("추천 강좌", response, height=200)
+        
+        with col2_2:
+            st.text_area("AI의견", "프롬프트 값 출력", height=200)
+
+
 def main():
-    # Streamlit 페이지 설정
-    st.set_page_config(
-    page_title="DirChat",
-    page_icon=":books:")
+    if 'page' not in st.session_state:
+        st.session_state.page = "정보 입력"
 
-    # 페이지 제목 설정
-    st.title("_Private Data :red[QA Chat]_ :books:")
-
-    # 세션 상태 초기화
-    if "conversation" not in st.session_state:
-        st.session_state.conversation = None
-
-    if "chat_history" not in st.session_state:
-        st.session_state.chat_history = None
-
-    if "processComplete" not in st.session_state:
-        st.session_state.processComplete = None
+   
 
     # 사이드바 위젯 설정
     with st.sidebar:
@@ -65,6 +143,14 @@ def main():
             "프론트엔드웹디자인.pdf"]
         openai_api_key = st.secrets["openai_api_key"]
         process = st.button("Process")
+
+        page = st.sidebar.radio("MENU", ["정보 입력", "AI 컨설팅"], index=["정보 입력", "AI 컨설팅"].index(st.session_state.page))
+
+    if page == "정보 입력":
+        page_one()
+    elif page == "AI 컨설팅":
+        page_two()
+
 
     # Firebase 인증서 설정 및 초기화
     cred = credentials.Certificate("auth.json")
@@ -135,22 +221,10 @@ def main():
                 # 답변 가져옴
                 response = result['answer']
                 # 답변에 사용된 문서들을 가져옴
-                source_documents = result['source_documents']
+                #source_documents = result['source_documents']
 
-                st.markdown(response) # 답변 표시
-                with st.expander("참고 문서 확인"):
-                    # 참고 문서 3개까지 가져옴
-                    # 각 문서의 메타데이터에서 'source'를 추출하여 문서의 출처를 표시하고, 문서의 내용을 help 매개변수로 추가
-                    # st.markdown(source_documents[0].metadata['source'], help = source_documents[0].page_content)
-                    # st.markdown(source_documents[1].metadata['source'], help = source_documents[1].page_content)
-                    # st.markdown(source_documents[2].metadata['source'], help = source_documents[2].page_content)
-                    for doc in source_documents:
-                        st.markdown(doc.metadata.get('source', 'No source available'), help=doc.page_content)
-                    
 
-        # 어시스턴트 답변을 채팅 메시지에 추가
-        st.session_state.messages.append({"role": "assistant", "content": response})
-
+ 
         # 컬렉션의 모든 문서를 가져옴
         collection_ref = db.collection('langchain')
         docs = collection_ref.stream()
