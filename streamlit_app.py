@@ -144,6 +144,13 @@ def page_one():
                 'response': response
             })
             st.session_state.conversation2 = response
+
+            query2 = "컴퓨터 공학과 2학년 웹 개발자가 꿈이 학생이 들을만한 강의 추천 이유를 알려줘"        ##사용자 정보를 바탕으로 쿼리문 입력
+            result2 = chain({"question": query2})
+            response2 = result2['answer']
+            st.session_state.conversation3 = response2
+
+
             st.session_state.page = "AI 컨설팅"
 
 
@@ -153,6 +160,7 @@ def page_two():
     st.subheader("AI 컨설팅")
 
     response = st.session_state.conversation2
+    response2 = st.session_state.conversation3
 
     student_id = int(st.session_state.student_info['student_id'])
     if student_id >= 20160000:
@@ -183,7 +191,7 @@ def page_two():
             st.text_area("추천 강좌", response, height=200)
         
         with col2_2:
-            st.text_area("AI의견", "프롬프트 값 출력", height=200)
+            st.text_area("AI의견", "프롬프트 값 출력", response2,height=200)
 
 
 def main():
