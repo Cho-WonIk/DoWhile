@@ -56,7 +56,9 @@ def main():
         print("Current working directory:", os.getcwd())
         print("Current file list:", os.listdir(os.getcwd()))
 
-        cred = credentials.Certificate("/dowhile/auth.json")
+        directory = os.getcwd()
+
+        cred = credentials.Certificate(directory + "/auth.json")
 
         # Firebase 앱 초기화
         firebase_admin.initialize_app(cred)
