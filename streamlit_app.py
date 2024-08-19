@@ -98,27 +98,44 @@ def main():
     history = StreamlitChatMessageHistory(key="chat_messages")
 
     # Chat logic
+    # 사용자 입력 받아 query 변수에 저장
     if query := st.chat_input("질문을 입력해주세요."):
+
+        # 사용자가 입력한 질문을 st.session_state.messages 리스트에 추가
         st.session_state.messages.append({"role": "user", "content": query})
 
+        # 사용자 메시지 화면에 표시
         with st.chat_message("user"):
-            st.markdown(query)
+            st.markdown(query) # 사용자 질문 넣기
 
+        # 답변 메시지 화면에 표시
         with st.chat_message("assistant"):
+            # 이전에 설정한 대화 체인을 가져옴
             chain = st.session_state.conversation
 
             with st.spinner("Thinking..."):
+                # 대화 체인에 사용자의 질문을 전달
                 result = chain({"question": query})
+
+                # OpenAI API 호출에 대한 콜백을 설정
                 with get_openai_callback() as cb:
+                    # 대화 체인에서 반환된 대화 기록을 세션 상태에 저장
                     st.session_state.chat_history = result['chat_history']
+
+                # 답변 가져옴
                 response = result['answer']
+                # 답변에 사용된 문서들을 가져옴
                 source_documents = result['source_documents']
 
-                st.markdown(response)
+                st.markdown(response) # 답변 표시
                 with st.expander("참고 문서 확인"):
-                    st.markdown(source_documents[0].metadata['source'], help = source_documents[0].page_content)
-                    st.markdown(source_documents[1].metadata['source'], help = source_documents[1].page_content)
-                    st.markdown(source_documents[2].metadata['source'], help = source_documents[2].page_content)
+                    # 참고 문서 3개까지 가져옴
+                    # 각 문서의 메타데이터에서 'source'를 추출하여 문서의 출처를 표시하고, 문서의 내용을 help 매개변수로 추가
+                    # st.markdown(source_documents[0].metadata['source'], help = source_documents[0].page_content)
+                    # st.markdown(source_documents[1].metadata['source'], help = source_documents[1].page_content)
+                    # st.markdown(source_documents[2].metadata['source'], help = source_documents[2].page_content)
+                    for doc in source_documents:
+                        st.markdown(doc.metadata.get('source', 'No source available'), help=doc.page_content)
                     
 
 
