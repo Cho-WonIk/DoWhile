@@ -219,12 +219,18 @@ def get_vectorstore(text_chunks):
     return vectordb
 
 def get_conversation_chain(vetorestore, openai_api_key):
-    # 대화 체인을 설정하는 함수
-    system_prompt = (
-        "당신은 다양한 분야에 대한 광범위한 지식을 갖춘 유능한 어시스턴트입니다. "
-        "사용자의 질문에 대해 간결하고 정확하며 유용한 답변을 제공해야 합니다. "
-        "친절하고 전문적인 톤을 유지하면서 응답하세요."
+    pre_context = (
+        "다음은 회사의 최신 정책입니다. "
+        "1. 근무 시간은 오전 9시부터 오후 6시까지입니다. "
+        "2. 모든 직원은 매주 월요일에 주간 회의를 참석해야 합니다. "
+        "3. 휴가는 연간 20일 제공됩니다."
     )
+        
+    system_prompt = (
+        "당신은 컴퓨터 공학 분야에 대한 깊은 지식을 갖춘 유능한 어시스턴트입니다. "
+        "사용자의 질문에 대해 유용하고 도움이되는 정확하며 유용한 답변을 제공해야 합니다. "
+        "친절하고 전문적인 톤을 유지하면서 응답하세요."
+    ).format(pre_context=pre_context)
         
     llm = ChatOpenAI(
         openai_api_key=openai_api_key, 
