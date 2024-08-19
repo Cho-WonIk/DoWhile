@@ -195,6 +195,7 @@ def page_two():
             st.text_area("AI의견", response2, height=200)
 
     if st.button("질문"):
+        st.session_state.conversation3 = response2
         st.session_state.page = "Q&A"
 
 
