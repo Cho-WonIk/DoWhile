@@ -201,7 +201,7 @@ def page_two():
 
 def page_three():
     st.write("세번째 페이지")
-    chain = st.session_state.conversation3
+    chain = st.session_state.conversation
     q = st.text_area("질문사항", height=375)  # 이수한 과목 및 학점 입력
     if st.button("질문"):
         result = chain({"question": q})
