@@ -107,7 +107,7 @@ def page_one():
             vetorestore = get_vectorstore(text_chunks)
 
             # 대화 체인 설정
-            st.session_state.conversation = get_conversation_chain(vetorestore, openai_api_key) 
+            st.session_state.conversation = get_conversation_chain(vetorestore, openai_api_key, grad_Info=grad_info) 
 
             st.session_state.processComplete = True
 
@@ -288,7 +288,7 @@ def get_vectorstore(text_chunks):
     vectordb = FAISS.from_documents(text_chunks, embeddings)
     return vectordb
 
-def get_conversation_chain(vetorestore, openai_api_key):
+def get_conversation_chain(vetorestore, openai_api_key, grad_Info):
     pre_context = (
         ""
     )
@@ -297,8 +297,7 @@ def get_conversation_chain(vetorestore, openai_api_key):
         "당신은 컴퓨터 공학 분야에 대한 깊은 지식을 갖춘 유능한 어시스턴트입니다. "
         "사용자의 질문에 대해 유용하고 도움이되는 정확하며 유용한 답변을 제공해야 합니다. "
         "친절하고 전문적인 톤을 유지하면서 응답하세요."
-    )
-    # ).format(pre_context=pre_context)
+    ).format(pre_context=grad_Info)
         
     llm = ChatOpenAI(
         openai_api_key=openai_api_key, 
